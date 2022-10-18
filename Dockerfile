@@ -21,11 +21,15 @@ RUN ls -al
 RUN make build
 
 # Create a minimal container to run a Golang static binary
-FROM scratch
+#FROM scratch
+
+FROM alpine
 
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/who/who .
+
+RUN ls -al
 
 ENTRYPOINT ["/who"]
 EXPOSE 80
