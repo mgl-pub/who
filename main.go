@@ -70,7 +70,12 @@ func getRegion(ip string) string {
 	dir, _ := os.Getwd()
 
 	println("dir", dir)
-	dbFile = dir + "/data/ip2region.xdb"
+	if dir != "/" {
+		dbFile = "/data/ip2region.xdb"
+	} else {
+		dbFile = dir + "/data/ip2region.xdb"
+	}
+
 	fmt.Println(homedir.Expand("/data/ip2region.xdb"))
 	fmt.Println(dbFile)
 	if dbFile == "" {
