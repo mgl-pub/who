@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           #context: /mgx # context 目录似乎不好指定 ./mgx  /mgx 都不对
-          file: ./Dockerfile
+          file: ./alpine/Dockerfile
           platforms: linux/arm64/v8,linux/amd64
           push: true
           tags: hotpot/who:alpine,hotpot/who:1.3-alpine
