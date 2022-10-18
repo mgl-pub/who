@@ -25,5 +25,6 @@ FROM scratch
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/who/who .
+COPY --from=builder /go/who/data .
 ENTRYPOINT ["/who"]
-EXPOSE 80
+EXPOSE 80 8080
