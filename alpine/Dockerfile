@@ -28,9 +28,12 @@ FROM alpine
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/who/who .
-COPY --from=builder /go/who/data .
+
+RUN mkdir data
+COPY --from=builder /go/who/data/* data/
 
 RUN ls -al
+RUN ls -al data
 
 ENTRYPOINT ["/who"]
 EXPOSE 80 8080
