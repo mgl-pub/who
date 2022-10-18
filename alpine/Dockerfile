@@ -29,6 +29,8 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/who/who .
 
+ENV DB_PATH="/data/ip2region.xdb"
+
 RUN mkdir data
 COPY --from=builder /go/who/data/* data/
 
