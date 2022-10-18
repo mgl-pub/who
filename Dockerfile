@@ -4,7 +4,7 @@ RUN apk update
 
 RUN apk --no-cache --no-progress add git ca-certificates tzdata make
 
-RUN apk --no-cache --no-progress add update-ca-certificates
+#RUN apk --no-cache --no-progress add update-ca-certificates
 
 RUN rm -rf /var/cache/apk/*
 
