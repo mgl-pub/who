@@ -11,7 +11,8 @@ COPY go.mod .
 COPY go.sum .
 RUN GO111MODULE=on GOPROXY=https://proxy.golang.org go mod download
 
-COPY . .
+COPY ./* .
+RUN ls -al
 
 RUN make build
 
