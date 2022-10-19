@@ -39,7 +39,11 @@ RUN ls -al data
 
 COPY ./test/docker-entrypoint.sh /
 
+RUN chmod +x /docker-entrypoint.sh
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 80 8080
+
+STOPSIGNAL SIGQUIT
 
 CMD ["/who"]
