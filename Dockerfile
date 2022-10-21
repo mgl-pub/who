@@ -27,7 +27,7 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/who/who .
 ENV DB_PATH=""
 
-COPY ./templates .
+COPY ./templates ./
 
 COPY --from=builder /go/who/data/* .
 COPY --from=builder /go/who/data/* data/
