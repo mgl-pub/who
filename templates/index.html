@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我是谁</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clifford: '#da373d',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link
+            href="https://unpkg.com/@material-tailwind/html@latest/styles/material-tailwind.css"
+            rel="stylesheet"
+    />
+    <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+    />
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+            integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+            crossorigin="anonymous"/>
+
+    <style>
+        .navbar {
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body>
+<div
+        class="min-h-screen "
+>
+    <nav class="navbar w-full bg-white">
+        <div class="container-lg px-0">
+            <div class="flex w-full items-center">
+                <a class="nav-brand mr-auto ml-0" href="#">我是谁</a>
+                <button
+                        navbar-trigger=""
+                        class="navbar-trigger ml-auto mr-0 mb-0 lg:hidden xl:hidden"
+                        type="button"
+                        aria-controls="navigation"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation"
+                >
+                    <span class="navbar-trigger-icon">
+                    <span bar1="" class="navbar-trigger-bar mt-1"
+                    ><span class="hidden origin-[10%_10%] rotate-45"></span
+                    ></span>
+                    <span bar2="" class="bar2 navbar-trigger-bar mt-2"></span>
+                    <span bar3="" class="bar3 navbar-trigger-bar mt-2"
+                    ><span
+                            class="mt-mt-[0.4375rem] hidden origin-[10%_90%] -rotate-45"
+                    ></span
+                    ></span>
+                    </span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" navbar-menu="">
+                <ul class="navbar-nav">
+                    <li>
+                        <a class="nav-link" aria-current="page" href="#">
+                            <i class="material-icons mr-2 text-base opacity-60">article</i>
+                            <span>提交Ip</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#">
+                            <i class="material-icons mr-2 text-base opacity-60">apps</i>
+                            <span>纠错IP</span>
+                        </a>
+                    </li>
+                    <li class="flex">
+                        <a class="nav-link" href="#">
+                            <i class="material-icons mr-2 text-base opacity-60">view_carousel</i>
+                            <span>下载</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#">
+                            <i class="fab fa-github mr-2 text-base opacity-60"></i>
+                            <span>联系我</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="w-full md:w-7/12 pt-5 px-4 mb-8 mx-auto text-left">
+        <ul class="border border-gray-200 rounded overflow-hidden shadow-md">
+            <li class="px-4 py-2 bg-white hover:bg-sky-100 hover:text-sky-900 border-b last:border-none border-gray-200 transition-all duration-300 ease-in-out">
+                您的公网IP信息： {{.Data.ClientIp}} | {{.Data.ClientRegion}}
+            </li>
+            <li class="px-4 py-2 bg-white hover:bg-sky-100 hover:text-sky-900 border-b last:border-none border-gray-200 transition-all duration-300 ease-in-out">
+                Name: {{.Data.Name}}
+            </li>
+            <li class="px-4 py-2 bg-white hover:bg-sky-100 hover:text-sky-900 border-b last:border-none border-gray-200 transition-all duration-300 ease-in-out">
+                HostName: {{.Data.HostName}}
+            </li>
+            <li class="px-4 py-2 bg-white hover:bg-sky-100 hover:text-sky-900 border-b last:border-none border-gray-200 transition-all duration-300 ease-in-out text-sm">
+                {{ range .Data.Headers}}
+                {{.Key}}={{.Value}} <br>
+                {{end}}
+            </li>
+            <li class="px-4 py-2 bg-white hover:bg-sky-100 hover:text-sky-900 border-b last:border-none border-gray-200 transition-all duration-300 ease-in-out">
+                {{range .Data.LocalIps}}
+                IP: {{.}} <br>
+                {{end}}
+            </li>
+        </ul>
+        <div class="w-full md:w-7/12 pt-5 px-4 mb-8 mx-auto text-center">
+            <div class="text-sm text-gray-700 py-1">
+                计划中：启动一个大家共同维护的IP数据库的项目，按贡献量计算下载次数，给那些经济能力不足以支撑购买IP数据库或者不喜欢购买的人多一种选择，通过自己的努力可免费使用IP数据库 <br/><br/>
+                Created by<a
+                    href="https://123456789.blog"
+                    class="text-gray-700 font-semibold"
+                    target="_blank"
+            >
+                BLOG (QQ: 10426544)</a
+            >.
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- from cdn -->
+<script src="https://unpkg.com/@material-tailwind/html@latest/scripts/collapse.js"></script>
+
+</body>
+</html>

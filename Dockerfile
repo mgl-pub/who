@@ -25,9 +25,21 @@ FROM scratch
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/who/who .
-ENV DB_PATH="/ip2region.xdb"
+ENV DB_PATH=""
 
-COPY --from=builder /go/who/data/ .
+COPY ./templates .
+
+COPY --from=builder /go/who/data/* .
 COPY --from=builder /go/who/data/* data/
-ENTRYPOINT ["/who"]
+
+
+COPY ./docker-entrypoint.sh /
+
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 80 8080
+
+STOPSIGNAL SIGQUIT
+
+CMD ["/who"]

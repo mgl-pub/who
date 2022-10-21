@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/go-homedir"
+	"html/template"
 	"io"
 	"log"
 	"net"
@@ -20,6 +21,8 @@ import (
 	"sync"
 	"time"
 	"who/common"
+	"who/ip2locate"
+	"who/model"
 	"who/xdb"
 )
 
@@ -46,7 +49,7 @@ func init() {
 	flag.StringVar(&cert, "cert", "", "give me a certificate")
 	flag.StringVar(&key, "key", "", "give me a key")
 	flag.StringVar(&ca, "cacert", "", "give me a CA chain, enforces mutual TLS")
-	flag.StringVar(&port, "port", getEnv("WHO_PORT_NUMBER", "8080"), "give me a port number")
+	flag.StringVar(&port, "port", common.Utils.GetEnv("WHO_PORT_NUMBER", "8080"), "give me a port number")
 	flag.StringVar(&name, "name", os.Getenv("WHO_NAME"), "give me a name")
 
 	localNetworks = append(localNetworks, "10.0.0.0/8")
@@ -69,6 +72,8 @@ func init() {
 	172.30.0.0/12
 	172.31.0.0/12
 	192.168.0.0/16*/
+
+	//template.Must(template.ParseGlob(common.Utils.GetTemplatePath() + "/*.html"))
 }
 
 var upgrade = websocket.Upgrader{
@@ -87,21 +92,7 @@ func printHelp() {
 func getRegion(ip string) string {
 	var err error
 	var dbFile, cachePolicy = "", "vectorIndex"
-
-	dir, _ := os.Getwd()
-
-	println("dir", dir, "ip", ip)
-	fmt.Println("dir != \"/\"", dir != "/")
-	if dir != "/" {
-		dbFile = dir + "/data/ip2region.xdb"
-
-	} else {
-		dbFile = "/data/ip2region.xdb"
-	}
-
-	dbFile = getEnv("DB_PATH", dbFile)
-
-	fmt.Println(homedir.Expand("/data/ip2region.xdb"))
+	dbFile = common.Utils.GetIpDataPath() + "/ip2region.xdb"
 	fmt.Println(dbFile)
 	if dbFile == "" {
 		fmt.Printf("%s search [command options]\n", os.Args[0])
@@ -136,6 +127,15 @@ func getRegion(ip string) string {
 		fmt.Printf("\x1b[0;32m{region: %s, ioCount: %d, took: %s}\x1b[0m\n", region, searcher.GetIOCount(), time.Since(tStart))
 	}
 
+	region = strings.ReplaceAll(region, "|0|", "")
+	region = strings.ReplaceAll(region, "|", "")
+
+	locate := ip2locate.Ip2Location.GetForeignRegion(ip)
+	if locate != nil {
+		if locate.CountryShort != "CN" {
+			region = fmt.Sprintf("%s%s%s", locate.CountryLong, locate.City, locate.Region)
+		}
+	}
 	return region
 }
 
@@ -386,17 +386,21 @@ default:
 }*/
 //}
 
+/*func main() {
+	ip2locate.Ip2Location.GetForeignRegion("129.154.222.222")
+}*/
+
 func main() {
 	dir, _ := os.Getwd()
 
 	println("dir", dir)
 	flag.Parse()
 	mux := http.NewServeMux()
-	mux.Handle("/data", handle(dataHandler, verbose))
+	/*mux.Handle("/data", handle(dataHandler, verbose))
 	mux.Handle("/echo", handle(echoHandler, verbose))
 	mux.Handle("/bench", handle(benchHandler, verbose))
 	mux.Handle("/api", handle(apiHandler, verbose))
-	mux.Handle("/health", handle(healthHandler, verbose))
+	mux.Handle("/health", handle(healthHandler, verbose))*/
 	mux.Handle("/", handle(whoHandler, verbose))
 
 	if cert == "" || key == "" {
@@ -587,12 +591,19 @@ func whoHandler(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	var data = model.Data{}
+
 	if name != "" {
-		_, _ = fmt.Fprintln(w, "Name:", name)
+		//_, _ = fmt.Fprintln(w, "Name:", name)
+		data.Name = name
 	}
 
 	hostname, _ := os.Hostname()
-	_, _ = fmt.Fprintln(w, "Hostname:", hostname)
+	//_, _ = fmt.Fprintln(w, "Hostname:", hostname)
+
+	data.HostName = hostname
+
+	var ips []string
 
 	ifaces, _ := net.Interfaces()
 	for _, i := range ifaces {
@@ -606,11 +617,16 @@ func whoHandler(w http.ResponseWriter, req *http.Request) {
 			case *net.IPAddr:
 				ip = v.IP
 			}
-			_, _ = fmt.Fprintln(w, "IP:", ip)
+			//_, _ = fmt.Fprintln(w, "IP:", ip)
+			ips = append(ips, ip.String())
 		}
 	}
 
+	data.LocalIps = ips
+
 	remoteIP := clientIP(req)
+
+	data.ClientIp = remoteIP
 	var region string
 
 	if strings.Contains(remoteIP, "::1") || strings.Contains(remoteIP, "127.0.0.1") {
@@ -618,13 +634,42 @@ func whoHandler(w http.ResponseWriter, req *http.Request) {
 	} else {
 		region = getRegion(clientIP(req))
 	}
-	_, _ = fmt.Fprintln(w, "YourIpAddr(您的公网IP):", remoteIP)
-	_, _ = fmt.Fprintln(w, "YourRegion(您IP所在位置):", region)
 
-	if err := req.Write(w); err != nil {
+	var headers []model.Header
+
+	if len(req.Header) > 0 {
+		for k, v := range req.Header {
+			fmt.Printf("%s=%s\n", k, v[0])
+			headers = append(headers, model.Header{
+				Key:   k,
+				Value: strings.Join(v, "/"),
+			})
+		}
+	}
+
+	//_, _ = fmt.Fprintln(w, "YourIpAddr(您的公网IP):", remoteIP)
+	//_, _ = fmt.Fprintln(w, "YourRegion(您IP所在位置):", region)*/
+
+	/*if err := req.Write(w); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}*/
+
+	data.ClientRegion = region
+
+	//data.Headers = req.Header
+	data.Headers = headers
+
+	page := model.Page{
+		Data: data,
 	}
+
+	tmpl := template.Must(template.ParseFiles(common.Utils.GetTemplatePath() + "/index.html"))
+	err := tmpl.Execute(w, page)
+	if err != nil {
+		return
+	}
+
 }
 
 func apiHandler(w http.ResponseWriter, req *http.Request) {
@@ -703,12 +748,4 @@ func healthHandler(w http.ResponseWriter, req *http.Request) {
 		defer mutexHealthState.RUnlock()
 		w.WriteHeader(currentHealthState.StatusCode)
 	}
-}
-
-func getEnv(key, fallback string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		return fallback
-	}
-	return value
 }

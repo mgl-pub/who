@@ -29,4 +29,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/arm64/v8,linux/amd64
           push: true
-          tags: hotpot/who:latest,hotpot/who:1.5
+          tags: hotpot/who:latest,hotpot/who:2.0
