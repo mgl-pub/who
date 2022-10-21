@@ -31,8 +31,6 @@ COPY --from=builder /go/who/who .
 
 ENV DB_PATH="/data"
 
-
-
 RUN mkdir data && mkdir templates
 
 COPY ./templates/* templates/

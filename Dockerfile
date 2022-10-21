@@ -37,9 +37,9 @@ COPY ./docker-entrypoint.sh /
 
 #RUN chmod +x /docker-entrypoint.sh
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 80 8080
+ENTRYPOINT ["/who"]
 
-STOPSIGNAL SIGQUIT
+#STOPSIGNAL SIGQUIT
 
-CMD ["/who"]
+#CMD ["/who"]
