@@ -32,22 +32,15 @@ COPY --from=builder /go/who/who .
 ENV DB_PATH="/data"
 
 RUN mkdir data && mkdir templates
-
 COPY ./templates/* templates/
 
 COPY --from=builder /go/who/data/* data/
-
 RUN ls -al
 RUN ls -al data
 
-
 COPY ./docker-entrypoint.sh /
-
 RUN chmod +x /docker-entrypoint.sh
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 80 8080
-
 STOPSIGNAL SIGQUIT
-
 CMD ["/who"]
